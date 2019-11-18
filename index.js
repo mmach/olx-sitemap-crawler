@@ -168,6 +168,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                         return;
                                     } else {
                                         ch.sendToQueue('olx-sitemap-crawler', new Buffer($('a[data-cy="page-link-next"]').attr('href')), { persistent: true });
+                                        res()
 
 
 
@@ -203,7 +204,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     await Promise.all(promList)
                                     setTimeout(() => {
                                         res()
-                                    }, 2000)
+                                    }, 1000)
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
