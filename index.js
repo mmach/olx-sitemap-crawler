@@ -163,7 +163,6 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     channel2.assertQueue('olx-sitemap-crawler', {
                                         durable: true
                                     });
-                                    console.log('tu')
                                     if (stopCrawling == true) {
                                         res()
                                         return;
@@ -187,7 +186,6 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                         durable: true
                                     });
 
-                                    console.log('tu2')
                                     let promList = itemsToSend.filter(item => {
                                         return item.includes('https://www.olx.pl')
                                     }).map(async item => {
