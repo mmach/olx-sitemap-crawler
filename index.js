@@ -62,7 +62,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                         var $ = res.$;
 
                         let offer = $('table[data-id]')
-                        let stopCrawling = $('a[data-cy="page-link-next"]').attr('href')==undefined?true:false;
+                        let stopCrawling = $('a[data-cy="page-link-next"]').attr('href') == undefined ? true : false;
                         let itemsToSend = [];
 
                         Object.keys(offer).filter(item => {
@@ -86,7 +86,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                                                         if (span.children.filter(i => {
                                                                             return i.name == 'i' && i.attribs["data-icon"] == "clock"
                                                                         }).length > 0) {
-                                                                            if (!span.children[2].data.includes('dzisiaj') ) {
+                                                                            if (!span.children[2].data.includes('dzisiaj')) {
                                                                                 stopCrawling = true;
                                                                             } else {
                                                                                 tr.map(trChildren => {
@@ -189,24 +189,31 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     let promList = itemsToSend.filter(item => {
                                         return item.includes('https://www.olx.pl')
                                     }).map(async item => {
+                                        try {
+                                            let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
+                                            if (result.recordset[0].isExist > 0) {
+                                                console.log(item)
+                                                ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
+                                            } else {
+                                                console.log('Duplicates: ' + item)
+                                            }
 
-                                        let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
-                                        if (result.recordset[0].isExist > 0) {
-                                            console.log(item)
-                                            ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
-                                        } else {
-                                            console.log('Duplicates: ' + item)
+                                        } catch (err) {
+                                            rej();
                                         }
 
-
                                     });
-                                    if (promList.length > 0) {
-                                        await Promise.all(promList)
-                                        setTimeout(() => {
-                                            res()
-                                        }, 1000)
-                                    } else {
-                                        res();
+                                    try {
+                                        if (promList.length > 0) {
+                                            await Promise.all(promList)
+                                            setTimeout(() => {
+                                                res()
+                                            }, 1000)
+                                        } else {
+                                            res();
+                                        }
+                                    } catch (err) {
+                                        rej();
                                     }
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
@@ -232,7 +239,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                 channel.nack(msg);
                                 setTimeout(() => {
                                     done();
-                                }, 60000)
+                                }, 6000)
                             })
 
                         });
