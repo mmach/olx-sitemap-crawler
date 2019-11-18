@@ -163,6 +163,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     channel2.assertQueue('olx-sitemap-crawler', {
                                         durable: true
                                     });
+                                    console.log('tu')
                                     if (stopCrawling == true) {
                                         res()
                                         return;
@@ -181,12 +182,12 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     if (err2) {
                                         console.log(err2);
                                         rej();
-                                        return;
                                     } ch = channel2;
                                     channel2.assertQueue('olx-link-items-single', {
                                         durable: true
                                     });
 
+                                    console.log('tu2')
                                     let promList = itemsToSend.filter(item => {
                                         return item.includes('https://www.olx.pl')
                                     }).map(async item => {
@@ -201,10 +202,14 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
 
 
                                     });
-                                    await Promise.all(promList)
-                                    setTimeout(() => {
-                                        res()
-                                    }, 1000)
+                                    if (promList.length > 0) {
+                                        await Promise.all(promList)
+                                        setTimeout(() => {
+                                            res()
+                                        }, 1000)
+                                    } else {
+                                        res();
+                                    }
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
@@ -217,7 +222,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
 
 
                             });
-                            Promise.all(crawlerProm, newItemProm).then(succ => {
+                            Promise.all([crawlerProm, newItemProm]).then(succ => {
                                 channel.ack(msg);
                                 setTimeout(() => {
                                     conn.close();
