@@ -186,7 +186,9 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                         durable: true
                                     });
 
-                                    let promList = itemsToSend.map(async item => {
+                                    let promList = itemsToSend.filter(item => {
+                                        return item.includes('https://www.olx.pl')
+                                    }).map(async item => {
 
                                         let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
                                         if (result.recordset[0].isExist > 0) {
@@ -201,7 +203,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     await Promise.all(promList)
                                     setTimeout(() => {
                                         res()
-                                    }, 4000)
+                                    }, 2000)
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
