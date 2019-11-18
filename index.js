@@ -86,7 +86,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                                                         if (span.children.filter(i => {
                                                                             return i.name == 'i' && i.attribs["data-icon"] == "clock"
                                                                         }).length > 0) {
-                                                                            if (!span.children[2].data.includes('dzisiaj')) {
+                                                                            if (!span.children[2].data.includes('dzisiaj') && !span.children[2].data.includes('wczoraj')) {
                                                                                 stopCrawling = true;
                                                                             } else {
                                                                                 tr.map(trChildren => {
