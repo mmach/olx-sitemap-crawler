@@ -157,10 +157,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                 conn.createChannel(async function (err2, channel2) {
                                     if (err2) {
                                         console.log(err2);
-                                        setTimeout(() => {
-                                            channel.nack(msg);
-                                            done();
-                                        }, 60000)
+                                        rej()
                                         return;
                                     } ch = channel2;
                                     channel2.assertQueue('olx-sitemap-crawler', {
@@ -170,8 +167,9 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                         res()
                                         return;
                                     } else {
-                                        res();
                                         ch.sendToQueue('olx-sitemap-crawler', new Buffer($('a[data-cy="page-link-next"]').attr('href')), { persistent: true });
+
+
 
                                     }
 
@@ -181,10 +179,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                 conn.createChannel(async function (err2, channel2) {
                                     if (err2) {
                                         console.log(err2);
-                                        setTimeout(() => {
-                                            channel.nack(msg);
-                                            done();
-                                        }, 60000)
+                                        rej();
                                         return;
                                     } ch = channel2;
                                     channel2.assertQueue('olx-link-items-single', {
@@ -204,6 +199,9 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
 
                                     });
                                     await Promise.all(promList)
+                                    setTimeout(() => {
+                                        res()
+                                    }, 4000)
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
@@ -211,19 +209,23 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     //  console.log(test);
 
 
-                                    res();
 
                                 });
 
 
                             });
-                            await Promise.all(crawlerProm, newItemProm).then(succ => {
+                            Promise.all(crawlerProm, newItemProm).then(succ => {
                                 channel.ack(msg);
                                 setTimeout(() => {
                                     conn.close();
                                     //  ch.close();
                                     done();
                                 }, 1000)
+                            }, err => {
+                                channel.nack(msg);
+                                setTimeout(() => {
+                                    done();
+                                }, 60000)
                             })
 
                         });
