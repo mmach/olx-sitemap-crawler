@@ -62,7 +62,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                         var $ = res.$;
 
                         let offer = $('table[data-id]')
-                        let stopCrawling = false;
+                        let stopCrawling = $('a[data-cy="page-link-next"]').attr('href')==undefined?true:false;
                         let itemsToSend = [];
 
                         Object.keys(offer).filter(item => {
@@ -86,7 +86,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                                                         if (span.children.filter(i => {
                                                                             return i.name == 'i' && i.attribs["data-icon"] == "clock"
                                                                         }).length > 0) {
-                                                                            if (!span.children[2].data.includes('dzisiaj')) {
+                                                                            if (!span.children[2].data.includes('dzisiaj') ) {
                                                                                 stopCrawling = true;
                                                                             } else {
                                                                                 tr.map(trChildren => {
