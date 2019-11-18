@@ -167,10 +167,10 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                         durable: true
                                     });
                                     if (stopCrawling == true) {
-
+                                        res()
                                         return;
                                     } else {
-
+                                        res();
                                         ch.sendToQueue('olx-sitemap-crawler', new Buffer($('a[data-cy="page-link-next"]').attr('href')), { persistent: true });
 
                                     }
