@@ -225,6 +225,7 @@ amqp.connect('amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.clou
                                     done();
                                 }, 1000)
                             }, err => {
+                                console.log(err);
                                 channel.nack(msg);
                                 setTimeout(() => {
                                     done();
