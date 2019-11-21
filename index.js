@@ -32,7 +32,7 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(5);
+        channel.prefetch(4);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
