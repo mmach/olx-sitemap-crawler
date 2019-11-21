@@ -16,7 +16,7 @@ var c = new Crawler({
 
 
 // Queue some HTML code directly without grabbing (mostly for tests)
-amqp.connect('amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com', async function (error0, connection) {
+amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com', async function (error0, connection) {
     if (error0) {
         console.log(error0)
         throw error0;
