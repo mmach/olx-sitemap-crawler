@@ -142,7 +142,7 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
                         });
 
 
-                        const CONN_URL = 'amqp://kyqjanjv:6djuPiJWnpZnIMT1jZ-SvIULv8IOLw2P@hedgehog.rmq.cloudamqp.com/kyqjanjv';
+                        const CONN_URL =process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com';
                         let ch = null;
 
                         amqp.connect(CONN_URL, function (err, conn) {
