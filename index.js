@@ -5,7 +5,7 @@ const sql = require('mssql')
 
 
 var c = new Crawler({
-    maxConnections: 1,
+    maxConnections: 3,
     retries: 5,
     retryTimeout: 60000,
 
@@ -32,7 +32,7 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(1);
+        channel.prefetch(3);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
