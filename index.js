@@ -16,16 +16,14 @@ var c = new Crawler({
 
 
 // Queue some HTML code directly without grabbing (mostly for tests)
-amqp.connect('amqp://172.30.133.26', async function (error0, connection) {
+amqp.connect('amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com', async function (error0, connection) {
     if (error0) {
         console.log(error0)
         throw error0;
     }
-    console.log('dupa')
     let pool = await sql.connect('mssql://admin:justshare123@justshare-integration.clrcukgqxhwe.us-east-2.rds.amazonaws.com/IntegrationDB')
 
     connection.createChannel(function (error1, channel) {
-        console.log('dupa2')
 
         if (error1) {
             throw error1;
