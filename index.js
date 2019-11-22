@@ -16,7 +16,7 @@ var c = new Crawler({
 
 
 // Queue some HTML code directly without grabbing (mostly for tests)
-amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com', async function (error0, connection) {
+amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com', async function (error0, connection) {
     if (error0) {
         console.log(error0)
         throw error0;
@@ -28,7 +28,7 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
         if (error1) {
             throw error1;
         }
-        
+
         var queue = 'olx-sitemap-crawler';
 
 
@@ -87,7 +87,32 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
                                                                         if (span.children.filter(i => {
                                                                             return i.name == 'i' && i.attribs["data-icon"] == "clock"
                                                                         }).length > 0) {
-                                                                            if (!span.children[2].data.includes('dzisiaj') && !span.children[2].data.includes('wczoraj')) {
+                                                                            if (new Date().getHours() > 3) {
+                                                                                let hour = new Date().getHours()
+                                                                                if (span.children[2].data.includes('dzisiaj')) {
+                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[1]);
+                                                                                    if (offerHour < hour - 3) {
+                                                                                        stopCrawling = true;
+                                                                                    }
+                                                                                } else {
+                                                                                    stopCrawling = true;
+                                                                                }
+
+                                                                            } else {
+                                                                                if (span.children[2].data.includes('wczoraj')) {
+                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[1]);
+                                                                                    if (offerHour <= 20) {
+                                                                                        stopCrawling = true
+                                                                                    }
+
+                                                                                } else {
+                                                                                    stopCrawling = true
+                                                                                }
+                                                                            }
+
+                                                                            if (!
+                                                                                (span.children[2].data.includes('dzisiaj')
+                                                                                ) && !span.children[2].data.includes('wczoraj')) {
                                                                                 stopCrawling = true;
                                                                             } else {
                                                                                 tr.map(trChildren => {
@@ -142,7 +167,7 @@ amqp.connect(process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu
                         });
 
 
-                        const CONN_URL =process.env.AMQP?process.env.AMQP:'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com';
+                        const CONN_URL = process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pro-eu-west-1.openshiftapps.com';
                         let ch = null;
 
                         amqp.connect(CONN_URL, function (err, conn) {
