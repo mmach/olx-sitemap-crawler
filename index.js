@@ -91,7 +91,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                                                 let hour = new Date().getHours()
                                                                                 if (span.children[2].data.includes('dzisiaj')) {
                                                                                     let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[1]);
-                                                                                    if (offerHour < hour - 1) {
+                                                                                    if (offerHour < hour) {
                                                                                         stopCrawling = true;
                                                                                     }
                                                                                 } else {
