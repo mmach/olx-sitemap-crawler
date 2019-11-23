@@ -211,11 +211,11 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                         port: '6379',
                                         host: '10.130.31.236',
                                         auth_pass: 'justshare123',
-                            
+
                                     })
                             } catch (ex) {
                                 console.log(ex);
-                            
+
                             }
                             let newItemProm = new Promise((res, rej) => {
                                 conn.createChannel(async function (err2, channel2) {
@@ -250,8 +250,8 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                         } catch (err) {
                                             console.log(err);
-                                            throw err;
-                                            //  rej();
+                                            //throw err;
+                                            rej();
 
                                         }
 
