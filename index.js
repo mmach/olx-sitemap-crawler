@@ -13,19 +13,7 @@ var c = new Crawler({
 });
 
 
-var client = null;
-try {
-    client = redis.createClient(
-        {
-            port: '6379',
-            host: '10.130.31.236',
-            auth_pass: 'justshare123',
 
-        })
-} catch (ex) {
-    console.log(ex);
-
-}
 // Queue just one URL, with default callback
 
 
@@ -45,7 +33,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(5);
+        channel.prefetch(10);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
@@ -216,7 +204,19 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                 })
                             });
 
-
+                            var client = null;
+                            try {
+                                client = redis.createClient(
+                                    {
+                                        port: '6379',
+                                        host: '10.130.31.236',
+                                        auth_pass: 'justshare123',
+                            
+                                    })
+                            } catch (ex) {
+                                console.log(ex);
+                            
+                            }
                             let newItemProm = new Promise((res, rej) => {
                                 conn.createChannel(async function (err2, channel2) {
                                     if (err2) {
@@ -271,6 +271,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                             res();
                                         }
                                     } catch (err) {
+                                        client.quit();
                                         console.log(err);
                                         rej();
                                     }
