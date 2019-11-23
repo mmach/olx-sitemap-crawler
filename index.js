@@ -237,12 +237,12 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                             if (reply) {
                                                 console.log(reply)
                                                 console.log('Duplicates: ' + item)
-
+                                                return;
                                             } else {
                                                 await client.set(item.split('#')[0], 'OLX_PL');
                                                 await client.expire(item.split('#')[0], 60 * 60 * 3);
                                                 await ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
-
+                                                return
 
                                             }
 
@@ -250,7 +250,9 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                         } catch (err) {
                                             console.log(err);
-                                            rej();
+                                            throw err;
+                                            //  rej();
+
                                         }
 
                                     });
