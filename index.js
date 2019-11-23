@@ -2,6 +2,7 @@ var amqp = require('amqplib/callback_api');
 var Crawler = require("crawler");
 const sql = require('mssql')
 const redis = require('async-redis');
+var Promise = require('bluebird');
 
 
 var c = new Crawler({
