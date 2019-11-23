@@ -1,7 +1,7 @@
 var amqp = require('amqplib/callback_api');
 var Crawler = require("crawler");
 const sql = require('mssql')
-
+const redis = require('redis');
 
 
 var c = new Crawler({
@@ -21,7 +21,6 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
         console.log(error0)
         throw error0;
     }
-    let pool = await sql.connect('mssql://admin:justshare123@justshare-integration.clrcukgqxhwe.us-east-2.rds.amazonaws.com/IntegrationDB')
 
     connection.createChannel(function (error1, channel) {
 
@@ -211,24 +210,34 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                     channel2.assertQueue('olx-link-items-single', {
                                         durable: true
                                     });
+                                    var client = redis.createClient('6379', '10.130.31.236');
+                                    client.on('connect', () => {
 
-                                    let promList = itemsToSend.filter(item => {
-                                        return item.includes('https://www.olx.pl')
-                                    }).map(async item => {
-                                        try {
-                                            let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
-                                            if (result.recordset[0].isExist > 0) {
-                                                console.log(item)
-                                                ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
-                                            } else {
-                                                console.log('Duplicates: ' + item)
+                                        let promList = itemsToSend.filter(item => {
+                                            return item.includes('https://www.olx.pl')
+                                        }).map(async item => {
+                                            try {
+                                                //let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
+                                                client.get(item.split('#')[0], function (err, reply) {
+                                                    if (reply) {
+                                                        console.log('Duplicates: ' + item)
+
+                                                    } else {
+                                                        client.set(item.split('#')[0], 'OLX_PL', redis.print);
+                                                        client.expire(item.split('#')[0], 60 * 60 * 3);
+                                                        ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
+
+
+                                                    }
+                                                })
+
+
+                                            } catch (err) {
+                                                rej();
                                             }
 
-                                        } catch (err) {
-                                            rej();
-                                        }
-
-                                    });
+                                        });
+                                    })
                                     try {
                                         if (promList.length > 0) {
                                             await Promise.all(promList)
