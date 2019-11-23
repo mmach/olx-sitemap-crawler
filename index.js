@@ -210,7 +210,14 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                     channel2.assertQueue('olx-link-items-single', {
                                         durable: true
                                     });
-                                    var client = redis.createClient('6379', '10.130.31.236');
+                                    var client = redis.createClient(
+                                        {
+                                            port: '6379',
+                                            host: '10.130.31.236',
+                                            auth_pass: 'justshare123',                                                                                                                                                           
+
+                                        })
+
                                     client.on('connect', () => {
 
                                         let promList = itemsToSend.filter(item => {
