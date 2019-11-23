@@ -23,7 +23,7 @@ try {
         })
 } catch (ex) {
     console.log(ex);
-  
+
 }
 // Queue just one URL, with default callback
 
@@ -214,7 +214,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                 })
                             });
-                           
+
 
                             let newItemProm = new Promise((res, rej) => {
                                 conn.createChannel(async function (err2, channel2) {
@@ -248,6 +248,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
 
                                         } catch (err) {
+                                            console.log(err);
                                             rej();
                                         }
 
@@ -255,8 +256,11 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                     try {
                                         if (promList.length > 0) {
-                                            await Promise.all(promList);
-                                          //  await client.quit();
+                                            await Promise.mapSeries(promList, (item) => {
+                                                console.log(item);
+                                                return;
+                                            });
+                                            //  await client.quit();
 
                                             setTimeout(() => {
                                                 res();
@@ -265,6 +269,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                             res();
                                         }
                                     } catch (err) {
+                                        console.log(err);
                                         rej();
                                     }
 
