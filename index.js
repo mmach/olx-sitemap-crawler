@@ -201,14 +201,23 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                 })
                             });
-                            var client = redis.createClient(
-                                {
-                                    port: '6379',
-                                    host: '10.130.31.236',
-                                    auth_pass: 'justshare123',
+                            var client = null;
+                            try {
+                                client = redis.createClient(
+                                    {
+                                        port: '6379',
+                                        host: '10.130.31.236',
+                                        auth_pass: 'justshare123',
 
-                                })
-
+                                    })
+                            } catch (ex) {
+                                console.log(ex);
+                                channel.nack();
+                                setTimeout(() => {
+                                    done();
+                                }, 6000);
+                                return;
+                            }
 
                             let newItemProm = new Promise((res, rej) => {
                                 conn.createChannel(async function (err2, channel2) {
@@ -219,7 +228,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                     channel2.assertQueue('olx-link-items-single', {
                                         durable: true
                                     });
-                                   
+
 
                                     let promList = itemsToSend.filter(item => {
                                         return item.includes('https://www.olx.pl')
