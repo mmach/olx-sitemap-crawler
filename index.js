@@ -1,7 +1,7 @@
 var amqp = require('amqplib/callback_api');
 var Crawler = require("crawler");
 const sql = require('mssql')
-const redis = require('redis');
+const redis = require('async-redis');
 
 
 var c = new Crawler({
@@ -218,46 +218,47 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                         })
 
-                                    client.on('connect', () => {
-
-                                        let promList = itemsToSend.filter(item => {
-                                            return item.includes('https://www.olx.pl')
-                                        }).map(async item => {
-                                            try {
-                                                //let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
-                                                client.get(item.split('#')[0], function (err, reply) {
-                                                    if (reply) {
-                                                        console.log('Duplicates: ' + item)
-
-                                                    } else {
-                                                        await client.setAsync(item.split('#')[0], 'OLX_PL', redis.print);
-                                                        await client.expire(item.split('#')[0], 60 * 60 * 3);
-                                                        await ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
 
 
-                                                    }
-                                                })
-
-
-                                            } catch (err) {
-                                                rej();
-                                            }
-
-                                        });
-
+                                    let promList = itemsToSend.filter(item => {
+                                        return item.includes('https://www.olx.pl')
+                                    }).map(async item => {
                                         try {
-                                            if (promList.length > 0) {
-                                                await Promise.all(promList)
-                                                setTimeout(() => {
-                                                    res()
-                                                }, 1000)
+                                            //let result = await pool.request().input('link', sql.Text, item.split('#')[0]).input('integration_name', sql.Text, 'OLX_PL').execute(`INSERT_Link`)
+                                            let reply = await client.get(item.split('#')[0])
+                                            if (reply) {
+                                                console.log(reply)
+                                                console.log('Duplicates: ' + item)
+
                                             } else {
-                                                res();
+                                                await client.setAsync(item.split('#')[0], 'OLX_PL', redis.print);
+                                                await client.expire(item.split('#')[0], 60 * 60 * 3);
+                                                await ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
+
+
                                             }
+
+
+
                                         } catch (err) {
                                             rej();
                                         }
-                                    })
+
+                                    });
+
+                                    try {
+                                        if (promList.length > 0) {
+                                            await Promise.all(promList)
+                                            setTimeout(() => {
+                                                res()
+                                            }, 1000)
+                                        } else {
+                                            res();
+                                        }
+                                    } catch (err) {
+                                        rej();
+                                    }
+
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
