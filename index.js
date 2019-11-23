@@ -7,7 +7,7 @@ var Promise = require('bluebird');
 
 var c = new Crawler({
     maxConnections: 10,
-    retries: 5,
+    retries: 30,
     retryTimeout: 60000,
 
 });
@@ -33,7 +33,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(10);
+        channel.prefetch(5);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
