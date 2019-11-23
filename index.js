@@ -5,7 +5,7 @@ const redis = require('async-redis');
 
 
 var c = new Crawler({
-    maxConnections: 5,
+    maxConnections: 10,
     retries: 5,
     retryTimeout: 60000,
 
@@ -31,7 +31,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(5);
+        channel.prefetch(10);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
