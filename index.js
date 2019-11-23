@@ -45,7 +45,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
         var queue = 'olx-sitemap-crawler';
 
 
-        channel.prefetch(10);
+        channel.prefetch(5);
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
@@ -260,7 +260,6 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                     try {
                                         if (promList.length > 0) {
                                             await Promise.mapSeries(promList, (item) => {
-                                                console.log(item);
                                                 return;
                                             });
                                             //  await client.quit();
