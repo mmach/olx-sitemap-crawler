@@ -214,7 +214,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                         {
                                             port: '6379',
                                             host: '10.130.31.236',
-                                            auth_pass: 'justshare123',                                                                                                                                                           
+                                            auth_pass: 'justshare123',
 
                                         })
 
@@ -230,9 +230,9 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                         console.log('Duplicates: ' + item)
 
                                                     } else {
-                                                        client.set(item.split('#')[0], 'OLX_PL', redis.print);
-                                                        client.expire(item.split('#')[0], 60 * 60 * 3);
-                                                        ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
+                                                        await client.setAsync(item.split('#')[0], 'OLX_PL', redis.print);
+                                                        await client.expire(item.split('#')[0], 60 * 60 * 3);
+                                                        await ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
 
 
                                                     }
@@ -244,19 +244,20 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                             }
 
                                         });
-                                    })
-                                    try {
-                                        if (promList.length > 0) {
-                                            await Promise.all(promList)
-                                            setTimeout(() => {
-                                                res()
-                                            }, 1000)
-                                        } else {
-                                            res();
+
+                                        try {
+                                            if (promList.length > 0) {
+                                                await Promise.all(promList)
+                                                setTimeout(() => {
+                                                    res()
+                                                }, 1000)
+                                            } else {
+                                                res();
+                                            }
+                                        } catch (err) {
+                                            rej();
                                         }
-                                    } catch (err) {
-                                        rej();
-                                    }
+                                    })
                                     //  let queue = await addToQueue();
                                     //   console.log(queue);
                                     //queue.forEach(item => {
