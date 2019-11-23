@@ -201,6 +201,15 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                 })
                             });
+                            var client = redis.createClient(
+                                {
+                                    port: '6379',
+                                    host: '10.130.31.236',
+                                    auth_pass: 'justshare123',
+
+                                })
+
+
                             let newItemProm = new Promise((res, rej) => {
                                 conn.createChannel(async function (err2, channel2) {
                                     if (err2) {
@@ -210,15 +219,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                     channel2.assertQueue('olx-link-items-single', {
                                         durable: true
                                     });
-                                    var client = redis.createClient(
-                                        {
-                                            port: '6379',
-                                            host: '10.130.31.236',
-                                            auth_pass: 'justshare123',
-
-                                        })
-
-
+                                   
 
                                     let promList = itemsToSend.filter(item => {
                                         return item.includes('https://www.olx.pl')
@@ -248,9 +249,11 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                     try {
                                         if (promList.length > 0) {
-                                            await Promise.all(promList)
+                                            await Promise.all(promList);
+                                            await client.quit();
+
                                             setTimeout(() => {
-                                                res()
+                                                res();
                                             }, 1000)
                                         } else {
                                             res();
