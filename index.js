@@ -232,7 +232,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                 console.log('Duplicates: ' + item)
 
                                             } else {
-                                                await client.setAsync(item.split('#')[0], 'OLX_PL', redis.print);
+                                                await client.set(item.split('#')[0], 'OLX_PL');
                                                 await client.expire(item.split('#')[0], 60 * 60 * 3);
                                                 await ch.sendToQueue('olx-link-items-single', new Buffer(item.split('#')[0]), { persistent: true });
 
