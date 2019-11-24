@@ -111,11 +111,10 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                                                 }
                                                                             }
 
-                                                                            if (!
-                                                                                (span.children[2].data.includes('dzisiaj')
-                                                                                ) && !span.children[2].data.includes('wczoraj')) {
-                                                                                stopCrawling = true;
-                                                                            } else {
+                                                                            if (span.children[2].data.includes('dzisiaj')
+                                                                                || span.children[2].data.includes('wczoraj')) {
+                                                                                //stopCrawling = true;
+
                                                                                 tr.map(trChildren => {
                                                                                     trChildren.children.map(td => {
                                                                                         if (td.name == 'td' && td.attribs.rowspan == '2') {
