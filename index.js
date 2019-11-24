@@ -94,9 +94,12 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                                                     let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[0]);
                                                                                     if (offerHour < hour) {
                                                                                         stopCrawling = true;
+                                                                                        return;
                                                                                     }
                                                                                 } else {
                                                                                     stopCrawling = true;
+                                                                                    return;
+
                                                                                 }
 
                                                                             } else {
@@ -104,55 +107,55 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                                                     let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[0]);
                                                                                     if (offerHour <= 22) {
                                                                                         stopCrawling = true
+                                                                                        return;
+
                                                                                     }
 
                                                                                 } else {
                                                                                     stopCrawling = true
+                                                                                    return;
+
                                                                                 }
                                                                             }
 
-                                                                            if (span.children[2].data.includes('dzisiaj')
-                                                                                || span.children[2].data.includes('wczoraj')) {
-                                                                                //stopCrawling = true;
+                                                                            tr.map(trChildren => {
+                                                                                trChildren.children.map(td => {
+                                                                                    if (td.name == 'td' && td.attribs.rowspan == '2') {
 
-                                                                                tr.map(trChildren => {
-                                                                                    trChildren.children.map(td => {
-                                                                                        if (td.name == 'td' && td.attribs.rowspan == '2') {
+                                                                                        td.children.forEach(a => {
 
-                                                                                            td.children.forEach(a => {
-
-                                                                                                if (a.name == 'a') {
+                                                                                            if (a.name == 'a') {
 
 
 
-                                                                                                    //console.log(a.attribs.href)
-                                                                                                    //console.log(span.children[2].data)
-                                                                                                    itemsToSend.push(a.attribs.href);
+                                                                                                //console.log(a.attribs.href)
+                                                                                                //console.log(span.children[2].data)
+                                                                                                itemsToSend.push(a.attribs.href);
 
-                                                                                                    //     c_items.queue({
-                                                                                                    //         uri: a.attribs.href,
-                                                                                                    //         forceUTF8: false,
-                                                                                                    //         headers: {
-                                                                                                    //              "Content-Type": "application/json",
-                                                                                                    //              "sec-fetch-site": "same-origin",
-                                                                                                    //              "sec-fetch-mode": "navigate",
-                                                                                                    //              "sec-fetch-user": "?1",
-                                                                                                    //              "upgrade-insecure-requests": 1,
-                                                                                                    //              "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"
+                                                                                                //     c_items.queue({
+                                                                                                //         uri: a.attribs.href,
+                                                                                                //         forceUTF8: false,
+                                                                                                //         headers: {
+                                                                                                //              "Content-Type": "application/json",
+                                                                                                //              "sec-fetch-site": "same-origin",
+                                                                                                //              "sec-fetch-mode": "navigate",
+                                                                                                //              "sec-fetch-user": "?1",
+                                                                                                //              "upgrade-insecure-requests": 1,
+                                                                                                //              "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"
 
 
-                                                                                                    //           }
+                                                                                                //           }
 
-                                                                                                    //      })
+                                                                                                //      })
 
-                                                                                                }
-                                                                                            })
-                                                                                        }
-                                                                                    });
-                                                                                })
-                                                                            }
-                                                                            //console.log(span.children[2].data.includes('dzisiaj'))
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                });
+                                                                            })
                                                                         }
+                                                                        //console.log(span.children[2].data.includes('dzisiaj'))
+
                                                                     }
                                                                 })
                                                             }
