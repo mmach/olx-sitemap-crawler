@@ -91,7 +91,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                                                             if (new Date().getHours() > 3) {
                                                                                 let hour = new Date().getHours()
                                                                                 if (span.children[2].data.includes('dzisiaj')) {
-                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[1]);
+                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[0]);
                                                                                     if (offerHour < hour) {
                                                                                         stopCrawling = true;
                                                                                     }
@@ -101,7 +101,7 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
 
                                                                             } else {
                                                                                 if (span.children[2].data.includes('wczoraj')) {
-                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[1]);
+                                                                                    let offerHour = Number(span.children[2].data.split(' ')[1].split(':')[0]);
                                                                                     if (offerHour <= 22) {
                                                                                         stopCrawling = true
                                                                                     }
