@@ -211,8 +211,8 @@ amqp.connect(process.env.AMQP ? process.env.AMQP : 'amqp://mq2-justshare.e4ff.pr
                                 client = redis.createClient(
                                     {
                                         port: '6379',
-                                        host: '10.130.31.236',
-                                        auth_pass: 'justshare123',
+                                        host: '10.131.8.184',
+                                        auth_pass: 'test',
 
                                     })
                             } catch (ex) {
